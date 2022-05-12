@@ -1,0 +1,17 @@
+name: Scheduled build
+on:
+  schedule:
+  - cron: '0 7 * * 6'
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Installing dependencies
+      run: npm install
+    - name: Updating new movie entries
+      run: node index.js
+      env:
+        NOTION_KEY: ${{ secrets.NOTION_KEY }}
+        NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+        IMDB_API_KEY: ${{ secrets.IMDB_API_KEY }}
