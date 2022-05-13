@@ -2,6 +2,7 @@ import { config } from 'dotenv';
 import Cinema from './src/models/cinema.models.js';
 import getMovieData from './src/services/getMovieData.js';
 import getMovieIdFromUrl from './src/services/getMovieIdFromUrl.js';
+import searchMovieTitle from './src/services/searchMovieTitle.js';
 config();
 
 const { NOTION_KEY, NOTION_DATABASE_ID, IMDB_API_KEY } = process.env;
@@ -11,12 +12,31 @@ const { NOTION_KEY, NOTION_DATABASE_ID, IMDB_API_KEY } = process.env;
   const moviesWithoutData = await cinema.getMoviesWithoutData();
 
   for (const movie of moviesWithoutData) {
-    const pageID = movie.id;
     const ImDbLink = movie.properties['IMDB Link'].url;
+    let imdbId = '';
 
-    const imdbID = getMovieIdFromUrl(ImDbLink);
+    if (!ImDbLink) {
+      const movieTitle = movie.properties.Name.title[0].plain_text;
+      const results = await searchMovieTitle(IMDB_API_KEY, movieTitle);
+      imdbId = results[0].id;
+      console.log('No tiene link');
+    } else imdbId = getMovieIdFromUrl(ImDbLink);
 
-    const props = await getMovieData(IMDB_API_KEY, imdbID);
+    const pageID = movie.id;
+
+    const props = await getMovieData(IMDB_API_KEY, imdbId);
     await cinema.updateMovieData(pageID, props);
   }
 })();
+
+/**
+[
+  {
+    id: 'tt0988824',
+    resultType: 'Title',
+    image: 'https://imdb-api.com/images/original/MV5BMTE5NzIwMGUtYTE1MS00MDUxLTgyZjctOWVkZDAxM2M4ZWQ4XkEyXkFqcGdeQXVyNjc2NjA5MTU@._V1_Ratio0.7273_AL_.jpg',
+    title: 'Naruto: Shippûden',
+    description: '(2007) (TV Series) aka "Naruto Shippuden"'
+  }
+]
+*/
