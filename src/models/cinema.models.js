@@ -20,8 +20,14 @@ class Cinema {
     return response.results;
   }
 
-  async updateMovieData (pageID, { ...properties }) {
-    const { image, genreList, year, companies } = properties;
+  async updateMovieData (pageID, { ...props }) {
+    const {
+      image,
+      genreList,
+      year,
+      companies
+    } = props;
+
     await this.notion.pages.update({
       page_id: pageID,
       cover: {
