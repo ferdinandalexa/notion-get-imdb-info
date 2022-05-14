@@ -28,15 +28,3 @@ const { NOTION_KEY, NOTION_DATABASE_ID, IMDB_API_KEY } = process.env;
     await cinema.updateMovieData(pageID, props);
   }
 })();
-
-/**
-[
-  {
-    id: 'tt0988824',
-    resultType: 'Title',
-    image: 'https://imdb-api.com/images/original/MV5BMTE5NzIwMGUtYTE1MS00MDUxLTgyZjctOWVkZDAxM2M4ZWQ4XkEyXkFqcGdeQXVyNjc2NjA5MTU@._V1_Ratio0.7273_AL_.jpg',
-    title: 'Naruto: Shippûden',
-    description: '(2007) (TV Series) aka "Naruto Shippuden"'
-  }
-]
-*/
