@@ -12,19 +12,22 @@ const { NOTION_KEY, NOTION_DATABASE_ID, IMDB_API_KEY } = process.env;
   const moviesWithoutData = await cinema.getMoviesWithoutData();
 
   for (const movie of moviesWithoutData) {
-    const ImDbLink = movie.properties['IMDB Link'].url;
-    let imdbId = '';
-
-    if (!ImDbLink) {
-      const movieTitle = movie.properties.Name.title[0].plain_text;
-      const results = await searchMovieTitle(IMDB_API_KEY, movieTitle);
-      imdbId = results[0].id;
-      console.log('No tiene link');
-    } else imdbId = getMovieIdFromUrl(ImDbLink);
-
     const pageID = movie.id;
+    const PropsId = [movie.properties['IMDB Link'].id];
+    let imdbId;
 
-    const props = await getMovieData(IMDB_API_KEY, imdbId);
-    await cinema.updateMovieData(pageID, props);
+    cinema.getPageProperties(pageID, PropsId)
+      .then(async (value) => {
+        const ImDbLink = value[0].url;
+        if (!ImDbLink) {
+          const movieTitle = movie.properties.Name.title[0].plain_text;
+          const results = await searchMovieTitle(IMDB_API_KEY, movieTitle);
+          imdbId = results[0].id;
+        } else imdbId = getMovieIdFromUrl(ImDbLink);
+
+        const props = await getMovieData(IMDB_API_KEY, imdbId);
+        await cinema.updateMovieData(pageID, props);
+      }
+      );
   }
 })();

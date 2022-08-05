@@ -20,6 +20,19 @@ class Cinema {
     return response.results;
   }
 
+  async getPageProperties (pageId, propsId = []) {
+    const response = await Promise.allSettled(
+      propsId.map(propID => this.notion.pages.properties.retrieve(
+        {
+          page_id: pageId,
+          property_id: propID
+        }
+      ))
+    );
+    const propValues = response.map(({ value }) => value);
+    return propValues;
+  }
+
   async updateMovieData (pageID, { ...props }) {
     const {
       image,
